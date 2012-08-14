@@ -59,7 +59,7 @@ write (Var, Value) -> modify (Var, fun (A) -> {Value, A} end).
 
 -spec terminate (mvar(_)) -> ok. % IO
 %@doc Terminate mvar. Its finalizer will be executed. Future accesses to this mvar will fail, although repeated termination is fine.
-terminate (Var) -> catch gen_server:call (Var, stop, infinity), ok.
+terminate (Var) -> catch gen_server:call (Var, {stop, self()}, infinity), ok.
 
 -spec is_terminated (mvar(_)) -> boolean(). % IO
 %@doc Has mvar been terminated?
@@ -83,7 +83,7 @@ handle_call ({modify, Modify}, _From, {A, X}) -> try Modify (A)
 	of {A1, B} -> {reply, {ok, B}, {A1, X}}
 	catch Thrown -> {reply, {throw, Thrown}, {A, X}} end;
 % Terminate mvar
-handle_call (stop, _From, State) -> {stop, normal, ok, State}.
+handle_call ({stop, Parent}, _From, State) -> unlink(Parent), {stop, normal, ok, State}.
 
 -spec terminate (reason(), state(_)) -> any(). % IO. Result ignored
 % Execute finalizer upon termination
