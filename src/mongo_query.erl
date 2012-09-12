@@ -78,4 +78,5 @@ query_reply (#reply {
 				10057 -> throw (unauthorized);
                                 10195 -> throw (too_many_config_updates);
                         14827 -> throw (set_shard_version_transport_error);
+                                10276 -> throw (set_shard_version_transport_error);
 				_ -> erlang:error ({bad_query, hd (Docs)}) end end.
